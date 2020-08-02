@@ -87,7 +87,7 @@ def process(raw_data):
                               reply())
         except tweepy.TweepError as e:
             print(e.reason)
-    if "comment" in content.lower():
+    if "comment" or "reply" in content.lower():
         try:
             api.update_status(in_reply_to_status_id=twtId,
                               status=f"@" + user["screen_name"] + " " + randomizer)
