@@ -39,80 +39,39 @@ def process(raw_data):
     user = data["user"]
     twtId = data["id"]
     randomizer = random.choice(replyList)
+
     if "extended_tweet" in data:
-        exTwt = data["extended_tweet"]
-        # retweet like follow
-
-        # like
-        if "like" in exTwt["full_text"].lower():
-            try:
-                api.create_favorite(twtId)
-            except tweepy.TweepError as e:
-                print(e.reason)
-
-        # retweet
-        if "retweet" or "🔁" or "♻️" or "rt" in exTwt["full_text"].lower():
-            try:
-                api.retweet(twtId)
-            except tweepy.TweepError as e:
-                print(e.reason)
-
-        # follow user (just appending users to list, following them later to avoid being banned)
-        if "follow" or "foll" or "following" in exTwt["full_text"].lower():
-            # append user to "to follow" list
-            toFollowData["screen_name"].append(user["screen_name"])
-            if "user_mentions" in data["entities"]:
-                for i in data["entities"]["user_mentions"]:
-                    # append user to "to follow" list
-                    toFollowData["screen_name"].append(i["screen_name"])
-
-        # reply
-        if "comment" or "tag" in exTwt["full_text"].lower():
-            try:
-                api.update_status(in_reply_to_status_id=twtId, status=f"@" + user["screen_name"] + " " + randomizer +
-                                  f" @{random.choice(userList)} @{random.choice(userList)}")
-            except tweepy.TweepError as e:
-                print(e.reason)
-
+        content = data["extended_tweet"]["full_text"]
     else:
-        # like
-        if "like" in data["text"].lower():
-            try:
-                api.create_favorite(twtId)
-            except tweepy.TweepError as e:
-                print(e.reason)
+        content = data["text"]
 
-        # retweet
-        if "retweet" or "🔁" or "♻️" or "rt" in data["text"].lower():
-            try:
-                api.retweet(twtId)
-            except tweepy.TweepError as e:
-                print(e.reason)
-
-        # follow user (just appending users to list, following them later to avoid being banned)
-        if "follow" or "foll" or "following" in exTwt["full_text"].lower():
-            # append user to "to follow" list
-            toFollowData["screen_name"].append(user["screen_name"])
-            if "user_mentions" in data["entities"]:
-                for i in data["entities"]["user_mentions"]:
-                    # append user to "to follow" list
-                    toFollowData["screen_name"].append(i["screen_name"])
-
-        # reply
-        if "comment" or "tag" in data["text"].lower():
-            try:
-                api.update_status(in_reply_to_status_id=twtId, status=f"@" + user["screen_name"] + " " + randomizer +
-                                  f" @{random.choice(userList)} @{random.choice(userList)}")
-            except tweepy.TweepError as e:
-                print(e.reason)
-
-    # if "delete" and "in_reply_to_screen_name" not in data:
-    #    try:
-    #        if data[""]
-    #        twt_id = data["id"]
-    #        api.retweet(id=twt_id)
-    #    except tweepy.TweepError as e:
-    #        print(e.reason)
+    # like
+    if "like" in content.lower():
+        try:
+            api.create_favorite(twtId)
+        except tweepy.TweepError as e:
+            print(e.reason)
+    # retweet
+    if "retweet" or "🔁" or "♻️" or "rt" in content.lower():
+        try:
+            api.retweet(twtId)
+        except tweepy.TweepError as e:
+            print(e.reason)
+    # follow user (just appending users to list, following them later to avoid being banned)
+    if "follow" or "foll" or "following" in content.lower():
+        # append user to "to follow" list
+        toFollowData["screen_name"].append(user["screen_name"])
+        if "user_mentions" in data["entities"]:
+            for i in data["entities"]["user_mentions"]:
+                # append user to "to follow" list
+                toFollowData["screen_name"].append(i["screen_name"])
+    # reply
+    if "comment" or "tag" in content.lower():
+        try:
+            api.update_status(in_reply_to_status_id=twtId, status=f"@" + user["screen_name"] + " " + randomizer +
+                              f" @{random.choice(userList)} @{random.choice(userList)}")
+        except tweepy.TweepError as e:
+            print(e.reason)
 
 
 class MaxListener(tweepy.StreamListener):
