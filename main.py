@@ -65,11 +65,19 @@ def process(raw_data):
             for i in data["entities"]["user_mentions"]:
                 # append user to "to follow" list
                 toFollowData["screen_name"].append(i["screen_name"])
+
     # reply
+    def reply():
+        # users to mention
+        mentions = re.search(r'\d', content).group(0)
+        string = ""
+        for i in range(mentions):
+            string = string + f" @{random.choice(userList)}"
+        return string
     if "comment" or "tag" in content.lower():
         try:
             api.update_status(in_reply_to_status_id=twtId, status=f"@" + user["screen_name"] + " " + randomizer +
-                              f" @{random.choice(userList)} @{random.choice(userList)}")
+                              reply())
         except tweepy.TweepError as e:
             print(e.reason)
 
