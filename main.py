@@ -45,6 +45,21 @@ def process(raw_data):
     else:
         content = data["text"]
 
+    # reply
+    def reply():
+        # users to mention
+        splittedContent = content.lower().split("tag")
+
+        print(splittedContent)
+        mentions = re.search(r'\d', splittedContent[1]).group(0)
+        if int(mentions) > 0:
+            string = ""
+            for i in range(int(mentions)):
+                string = string + f" @{random.choice(userList)}"
+        else:
+            string = f" @{random.choice(userList)}"
+        return string
+
     # like
     if "like" in content.lower():
         try:
@@ -52,13 +67,13 @@ def process(raw_data):
         except tweepy.TweepError as e:
             print(e.reason)
     # retweet
-    if "retweet" or "🔁" or "♻️" or "rt" in content.lower():
+    elif "retweet" or "🔁" or "♻️" or "rt" in content.lower():
         try:
             api.retweet(twtId)
         except tweepy.TweepError as e:
             print(e.reason)
     # follow user (just appending users to list, following them later to avoid being banned)
-    if "follow" or "foll" or "following" in content.lower():
+    elif "follow" or "foll" or "following" in content.lower():
         # append user to "to follow" list
         toFollowData["screen_name"].append(user["screen_name"])
         if "user_mentions" in data["entities"]:
@@ -66,18 +81,16 @@ def process(raw_data):
                 # append user to "to follow" list
                 toFollowData["screen_name"].append(i["screen_name"])
 
-    # reply
-    def reply():
-        # users to mention
-        mentions = re.search(r'\d', content).group(0)
-        string = ""
-        for i in range(mentions):
-            string = string + f" @{random.choice(userList)}"
-        return string
-    if "comment" or "tag" in content.lower():
+    elif "tag" in content.lower():
         try:
             api.update_status(in_reply_to_status_id=twtId, status=f"@" + user["screen_name"] + " " + randomizer +
                               reply())
+        except tweepy.TweepError as e:
+            print(e.reason)
+    elif "comment" in content.lower():
+        try:
+            api.update_status(in_reply_to_status_id=twtId,
+                              status=f"@" + user["screen_name"] + " " + randomizer)
         except tweepy.TweepError as e:
             print(e.reason)
 
