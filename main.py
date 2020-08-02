@@ -5,6 +5,7 @@ import json
 import re
 import random
 import threading
+import credentials
 
 toFollowData = {}
 toFollowData["screen_name"] = []
