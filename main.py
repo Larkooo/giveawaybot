@@ -5,7 +5,7 @@ import json
 import re
 import random
 import threading
-import credentials
+from credentials import *
 
 toFollowData = {}
 toFollowData["screen_name"] = []
@@ -122,7 +122,7 @@ class MaxListener(tweepy.StreamListener):
         return True
 
     def process_data(self, raw_data):
-        reply(raw_data)
+        process(raw_data)
         time.sleep(216)
 
     def on_error(self, status_code):
