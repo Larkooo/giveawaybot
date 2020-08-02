@@ -67,13 +67,13 @@ def process(raw_data):
         except tweepy.TweepError as e:
             print(e.reason)
     # retweet
-    elif "retweet" or "🔁" or "♻️" or "rt" in content.lower():
+    if "retweet" or "🔁" or "♻️" in content.lower():
         try:
             api.retweet(twtId)
         except tweepy.TweepError as e:
             print(e.reason)
     # follow user (just appending users to list, following them later to avoid being banned)
-    elif "follow" or "foll" or "following" in content.lower():
+    if "follow" or "foll" or "following" in content.lower():
         # append user to "to follow" list
         toFollowData["screen_name"].append(user["screen_name"])
         if "user_mentions" in data["entities"]:
@@ -81,13 +81,13 @@ def process(raw_data):
                 # append user to "to follow" list
                 toFollowData["screen_name"].append(i["screen_name"])
 
-    elif "tag" in content.lower():
+    if "tag" in content.lower():
         try:
             api.update_status(in_reply_to_status_id=twtId, status=f"@" + user["screen_name"] + " " + randomizer +
                               reply())
         except tweepy.TweepError as e:
             print(e.reason)
-    elif "comment" in content.lower():
+    if "comment" in content.lower():
         try:
             api.update_status(in_reply_to_status_id=twtId,
                               status=f"@" + user["screen_name"] + " " + randomizer)
@@ -103,7 +103,7 @@ class MaxListener(tweepy.StreamListener):
 
     def process_data(self, raw_data):
         process(raw_data)
-        time.sleep(216)
+        time.sleep(30)
 
     def on_error(self, status_code):
         if status_code == 420:
